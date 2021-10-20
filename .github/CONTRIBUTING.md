@@ -53,7 +53,8 @@ issue. Stale issues will be closed.
 
 4. The issue is addressed in a pull request or commit. The issue will be
    referenced in the commit message so that the code that fixes it is clearly
-   linked.
+   linked. Any change a Consul user might need to know about will include a
+   changelog entry in the PR.
 
 5. The issue is closed.
 
@@ -61,7 +62,6 @@ issue. Stale issues will be closed.
 
 If you wish to work on Consul itself, you'll first need [Go](https://golang.org)
 installed (The version of Go should match the one of our [CI config's](https://github.com/hashicorp/consul/blob/main/.circleci/config.yml) Go image).
-
 
 Next, clone this repository and then run `make dev`. In a few moments, you'll have a working
 `consul` executable in `consul/bin` and `$GOPATH/bin`:
@@ -102,6 +102,72 @@ When a pull request is opened CI will run all tests and lint to verify the chang
 ## Go Module Dependencies
 
 If a dependency is added or change, run `go mod tidy` to update `go.mod` and `go.sum`.
+
+## Submitting a Pull Request
+
+Before writing any code, we recommend:
+- Create a Github issue if none already exists for the code change you'd like to make
+- Write a comment on the Github issue indicating you're interested in contributing so
+maintainers can provide their perspective if needed.
+
+When you're ready to submit a pull request:
+1. Include evidence that your changes work as intended (e.g., add/modify unit tests).
+2. Open the PR from your fork against base repository `hashicorp/consul` and branch `main`.
+   - [Link the PR to its associated issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue).
+3. Include any specific questions that you have for the reviewer in the PR description
+   or as a PR comment in Github.
+   - If there's anything you find the need to explain or clarify in the PR, consider
+   whether that explanation should be added in the source code as comments.
+   - You can submit a [draft PR](https://github.blog/2019-02-14-introducing-draft-pull-requests/)
+   if your changes aren't finalized but would benefit from in-process feedback.
+4. If there's any reason Consul users might need to know about this change,
+   [add a changelog entry](#adding-a-changelog-entry).
+5. After you submit, the Consul maintainers team needs time to carefully review your
+   contribution and ensure it is production-ready, considering factors such as: security,
+   backwards-compatibility, potential regressions, etc.
+6. After you address Consul maintainer feedback and the PR is approved, do the honors
+   of clicking the Github merge button!
+
+### Adding a Changelog Entry
+
+Any change that a Consul user might need to know about should have a changelog entry.
+
+What doesn't need a changelog entry?
+- Docs changes
+- Typos fixes, unless they are in a public-facing API
+- Code changes we are certain no Consul users will need to know about
+
+To include a changelog entry in a PR, commit a text file named `.changelog/<PR#>.txt`,
+where `<PR#>` is the number associated with the open PR in Github. The text file should
+describe the changes in the following format:
+
+````
+```release-note:<change type>
+<code area>: <brief description of the improvement you made here>
+```
+````
+
+Valid values for `<change type>` include:
+- `feature`: for the addition of a new feature
+- `improvement`: for an improvement (not a bug fix) to an existing feature
+- `bug`: for a bug fix
+- `security`: for any Common Vulnerabilities and Exposures (CVE) resolutions
+- `breaking-change`: for any change that is not fully backwards-compatible
+- `deprecation`: for functionality which is now marked for removal in a future release
+
+`<code area>` is meant to categorize the functionality affected by the change.
+Some common values are:
+- `checks`: related to node or service health checks
+- `cli`: related to the command-line interface and its commands
+- `config`: related to configuration changes (e.g., adding a new config option)
+- `connect`: catch-all for the Connect subsystem that provides service mesh functionality
+  if no more specific `<code area>` applies
+- `http`: related to the HTTP API interface and its endpoints
+- `dns`: related to DNS functionality
+- `ui`: any change related to the built-in Consul UI (`website/` folder)
+
+If a PR deserves multiple changelog entries, just add multiple entries separated by a newline
+in the format described above to the `.changelog/<PR#>.txt` file.
 
 ## Developer Documentation
 
